@@ -16,12 +16,15 @@ namespace MultiTenantManagement.Data.Models
 
         public DateTime CreatedAtUtc { get; set; } = DateTime.UtcNow;
 
-        public DateTime UpdatedAtUtc { get; set; }
-
-        public string? Notice { get; set; }
-
         public bool IsDeleted { get; set; }
 
+        [Required]
+        public string Status { get; set; }
+
+        public string? LogoURL { get; set; }
+
+        [Required, MaxLength(250)]
+        public string SubDomain { get; set; } 
 
         // Navigation
         public ICollection<ApplicationUser> Users { get; set; } = new List<ApplicationUser>();

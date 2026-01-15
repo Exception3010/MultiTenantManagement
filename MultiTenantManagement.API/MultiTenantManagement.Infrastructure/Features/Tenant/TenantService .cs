@@ -22,7 +22,8 @@ namespace MultiTenantManagement.Infrastructure.Features.Tenant
             return await _db.Tenants
                 .AsNoTracking()
                 .OrderByDescending(t => t.CreatedAtUtc)
-                .Select(t => new TenantDto() { Id= t.Id , Name =t.Name,CreatedAtUtc = t.CreatedAtUtc })
+                .Select(t => new TenantDto() { Id= t.Id ,Status =t.Status,SubDomain =t.SubDomain
+                            ,LogoURL=t.LogoURL, Name =t.Name,CreatedAtUtc = t.CreatedAtUtc })
                 .ToListAsync(ct);
         }
 
@@ -30,7 +31,15 @@ namespace MultiTenantManagement.Infrastructure.Features.Tenant
         {
             return await _db.Tenants.AsNoTracking()
                 .Where(t => t.Id == id)
-                  .Select(t => new TenantDto() { Id = t.Id, Name = t.Name, CreatedAtUtc = t.CreatedAtUtc ,UpdatedAtUtc =t.UpdatedAtUtc })
+                  .Select(t => new TenantDto()
+                  {
+                      Id = t.Id,
+                      Status = t.Status,
+                      SubDomain = t.SubDomain,
+                      LogoURL = t.LogoURL,
+                      Name = t.Name,
+                      CreatedAtUtc = t.CreatedAtUtc
+                  })
                 .FirstOrDefaultAsync(ct);
         }
 
@@ -43,7 +52,11 @@ namespace MultiTenantManagement.Infrastructure.Features.Tenant
             var tenant = new Data.Models.Tenant
             {
                 Name = name,
-                CreatedAtUtc = DateTime.UtcNow
+                CreatedAtUtc = DateTime.UtcNow,
+                SubDomain = req.SubDomain,
+                Status = req.Status.ToString(),
+                LogoURL = req.LogoURL
+               
             };
 
             _db.Tenants.Add(tenant);
@@ -60,8 +73,11 @@ namespace MultiTenantManagement.Infrastructure.Features.Tenant
 
             var tenant = await _db.Tenants.FirstOrDefaultAsync(t => t.Id == req.Id, ct);
             if (tenant is null) return false;
-
+            
             tenant.Name = name;
+            tenant.SubDomain = req.SubDomain;
+            tenant.Status = req.Status.ToString();
+            tenant.LogoURL = req.LogoURL;
             await _db.SaveChangesAsync(ct);
             return true;
         }
@@ -71,7 +87,7 @@ namespace MultiTenantManagement.Infrastructure.Features.Tenant
             var tenant = await _db.Tenants.FirstOrDefaultAsync(t => t.Id == id, ct);
             if (tenant is null) return false;
 
-            _db.Tenants.Remove(tenant);
+            tenant.IsDeleted = true;
             await _db.SaveChangesAsync(ct);
             return true;
         }

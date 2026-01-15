@@ -11,14 +11,15 @@ namespace MultiTenantManagement.Infrastructure.Features.Tenant.Dtos
     {
         public Guid Id { get; set; }
 
-        [Required, MaxLength(200)]
         public string Name { get; set; }
 
-        public string Notice { get; set; }
+        public string Status { get; set; }
+
+        public string? LogoURL { get; set; }
+
+        public string SubDomain { get; set; }
 
         public DateTime CreatedAtUtc { get; set; } 
-
-        public DateTime UpdatedAtUtc { get; set; }
 
     }
 }
