@@ -134,4 +134,12 @@ Eng. Belal Elfarra
 
 ---
 
+## Apply EF Core migrations
+
+```powershell
+dotnet ef database update --project .\MultiTenantManagement.Data\MultiTenantManagement.Data.csproj --startup-project .\MultiTenantManagement.API\MultiTenantManagement.API.csproj
+```
+
+---
+
 This repository represents a **practical, scalable, and secure Multi-Tenant SaaS-ready architecture**, suitable for academic evaluation and real-world extension.

@@ -23,7 +23,7 @@ namespace MultiTenantManagement.Infrastructure.Features.Tenant
                 .AsNoTracking()
                 .OrderByDescending(t => t.CreatedAtUtc)
                 .Select(t => new TenantDto() { Id= t.Id ,Status =t.Status,SubDomain =t.SubDomain
-                            ,LogoURL=t.LogoURL, Name =t.Name,CreatedAtUtc = t.CreatedAtUtc })
+                            ,LogoURL=t.LogoUrl, Name =t.Name,CreatedAtUtc = t.CreatedAtUtc })
                 .ToListAsync(ct);
         }
 
@@ -36,7 +36,7 @@ namespace MultiTenantManagement.Infrastructure.Features.Tenant
                       Id = t.Id,
                       Status = t.Status,
                       SubDomain = t.SubDomain,
-                      LogoURL = t.LogoURL,
+                      LogoURL = t.LogoUrl,
                       Name = t.Name,
                       CreatedAtUtc = t.CreatedAtUtc
                   })
@@ -55,7 +55,7 @@ namespace MultiTenantManagement.Infrastructure.Features.Tenant
                 CreatedAtUtc = DateTime.UtcNow,
                 SubDomain = req.SubDomain,
                 Status = req.Status.ToString(),
-                LogoURL = req.LogoURL
+                LogoUrl = req.LogoURL
                
             };
 
@@ -77,7 +77,7 @@ namespace MultiTenantManagement.Infrastructure.Features.Tenant
             tenant.Name = name;
             tenant.SubDomain = req.SubDomain;
             tenant.Status = req.Status.ToString();
-            tenant.LogoURL = req.LogoURL;
+            tenant.LogoUrl = req.LogoURL;
             await _db.SaveChangesAsync(ct);
             return true;
         }
