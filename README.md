@@ -134,6 +134,12 @@ Eng. Belal Elfarra
 
 ---
 
+## Create a new migration
+
+```powershell
+dotnet ef migrations add Initial -p MultiTenantManagement.Data -s MultiTenantManagement.API
+```
+
 ## Apply EF Core migrations
 
 ```powershell
