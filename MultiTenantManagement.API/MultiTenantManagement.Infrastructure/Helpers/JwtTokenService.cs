@@ -40,6 +40,9 @@ namespace MultiTenantManagement.Infrastructure.Helpers
 
             if (user.TenantId.HasValue)
             {
+                // Prefer snake_case claim name for tenant_id.
+                claims.Add(new Claim("tenant_id", user.TenantId.Value.ToString()));
+                // Keep legacy claim for backward compatibility with existing clients.
                 claims.Add(new Claim("tenantId", user.TenantId.Value.ToString()));
             }
 
