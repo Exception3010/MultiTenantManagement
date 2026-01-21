@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MultiTenantManagement.Infrastructure.Features.Authentication.Dtos
+﻿namespace MultiTenantManagement.Infrastructure.Features.Authentication.Dtos
 {
     public class LoginResultDto
     {
-        public string AccessToken { get; set; } = default!;
+        public string AccessToken { get; set; } = null!;
         public DateTime ExpiresAtUtc { get; set; }
     }
 }
