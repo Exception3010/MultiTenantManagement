@@ -1,16 +1,21 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using MultiTenantManagement.Infrastructure.Features.Users;
 using MultiTenantManagement.Infrastructure.Features.Users.Dtos;
+using MultiTenantManagement.Infrastructure.Features.Users;
 using MultiTenantManagement.Infrastructure.Helpers;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace MultiTenantManagement.API.Controllers
 {
     [Route("Users")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class UsersController(IUserManagementService users) : ControllerBase
+    public class UsersController : ControllerBase
     {
+        private readonly IUserManagementService _users;
+
+        public UsersController(IUserManagementService users) => _users = users;
+
         [HttpGet]
         [Route("GetUsers")]
         [Authorize(Roles = "SystemAdmin,TenantAdmin")]
@@ -23,7 +28,7 @@ namespace MultiTenantManagement.API.Controllers
                 tenantId = myTenant;
             }
 
-            return Ok(await users.GetUsersAsync(tenantId,ct));
+            return Ok(await _users.GetUsersAsync(tenantId,ct));
         }
 
         [HttpGet]
@@ -31,7 +36,7 @@ namespace MultiTenantManagement.API.Controllers
         [Authorize(Roles = "SystemAdmin,TenantAdmin")]
         public async Task<IActionResult> GetById(string userId, CancellationToken ct)
         {
-            var u = await users.GetByIdAsync(userId, ct);
+            var u = await _users.GetByIdAsync(userId, ct);
             if (u is null) return NotFound();
 
             if (User.IsTenantAdmin())
@@ -63,7 +68,7 @@ namespace MultiTenantManagement.API.Controllers
                 dto.TenantId = myTenant;
             }
 
-            var created = await users.CreateUserAsync(dto, actorId, ct);
+            var created = await _users.CreateUserAsync(dto, actorId, ct);
             return Ok(created);
         }
 
@@ -80,7 +85,7 @@ namespace MultiTenantManagement.API.Controllers
                 var myTenant = User.GetTenantId();
                 if (myTenant is null) return Forbid();
 
-                var target = await users.GetByIdAsync(userId, ct);
+                var target = await _users.GetByIdAsync(userId, ct);
                 if (target is null) return NotFound();
                 if (target.TenantId != myTenant) return Forbid();
 
@@ -89,7 +94,7 @@ namespace MultiTenantManagement.API.Controllers
                     return Forbid();
             }
 
-            var ok = await users.UpdateUserAsync(userId, dto, actorId, ct);
+            var ok = await _users.UpdateUserAsync(userId, dto, actorId, ct);
             return ok ? NoContent() : NotFound();
         }
 
@@ -106,12 +111,12 @@ namespace MultiTenantManagement.API.Controllers
                 var myTenant = User.GetTenantId();
                 if (myTenant is null) return Forbid();
 
-                var target = await users.GetByIdAsync(userId, ct);
+                var target = await _users.GetByIdAsync(userId, ct);
                 if (target is null) return NotFound();
                 if (target.TenantId != myTenant) return Forbid();
             }
 
-            var ok = await users.SoftDeleteAsync(userId, actorId, ct);
+            var ok = await _users.SoftDeleteAsync(userId, actorId, ct);
             return ok ? NoContent() : NotFound();
         }
 

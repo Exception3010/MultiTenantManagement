@@ -14,8 +14,7 @@ namespace MultiTenantManagement.Infrastructure.Helpers
 
         public static Guid? GetTenantId(this ClaimsPrincipal user)
         {
-            var val = user.FindFirst("tenant_id")?.Value
-                ?? user.FindFirst("tenantId")?.Value;
+            var val = user.FindFirst("tenantId")?.Value;
             return Guid.TryParse(val, out var g) ? g : null;
         }
 
