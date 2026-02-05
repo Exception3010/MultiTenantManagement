@@ -1,14 +1,21 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using MultiTenantManagement.Core.Interfaces;
 using MultiTenantManagement.Data.Models;
+
 
 namespace MultiTenantManagement.Data
 {
     public class AppDbContext : IdentityDbContext<ApplicationUser>
     {
-        public AppDbContext(DbContextOptions<AppDbContext> options)
+        private readonly ICurrentUserContext _currentUser;
+
+
+
+        public AppDbContext(DbContextOptions<AppDbContext> options, ICurrentUserContext currentUser)
            : base(options)
         {
+            _currentUser = currentUser;
         }
 
 
@@ -23,9 +30,6 @@ namespace MultiTenantManagement.Data
         protected override void OnModelCreating(ModelBuilder builder)
         {
                 base.OnModelCreating(builder);
-
-
-
 
                 builder.Entity<Tenant>(e =>
                 {
@@ -84,6 +88,28 @@ namespace MultiTenantManagement.Data
                      .HasForeignKey<StoreSetting>(s => s.TenantId)
                      .OnDelete(DeleteBehavior.Cascade);
                 });
+
+
+
+            //Global Query Filter
+            //builder.Entity<Product>()
+            //   .HasQueryFilter(p =>
+            //       _currentUser.IsSuperAdmin ||
+            //       (_currentUser.TenantId != null && p.TenantId == _currentUser.TenantId)
+            //   );
+
+            //builder.Entity<Order>()
+            //  .HasQueryFilter(p =>
+            //      _currentUser.IsSuperAdmin ||
+            //      (_currentUser.TenantId != null && p.TenantId == _currentUser.TenantId)
+            //  );
+
+            //builder.Entity<Tenant>()
+            //    .HasQueryFilter(p =>
+            //        _currentUser.IsSuperAdmin ||
+            //        (_currentUser.TenantId != null && p.Id == _currentUser.TenantId)
+            //     );
+
         }
 
     }

@@ -40,8 +40,14 @@ namespace MultiTenantManagement.Infrastructure.Helpers
 
             if (user.TenantId.HasValue)
             {
-                claims.Add(new Claim("tenantId", user.TenantId.Value.ToString()));
+                claims.Add(new Claim("tenant_id", user.TenantId.Value.ToString()));
             }
+
+            if (roles.Contains("SuperAdmin"))
+            {
+                claims.Add(new Claim("is_super_admin", "true"));
+            }
+
 
             var key = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(_config["Jwt:Key"]!)

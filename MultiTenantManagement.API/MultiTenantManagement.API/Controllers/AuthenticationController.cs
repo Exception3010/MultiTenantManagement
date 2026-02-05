@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using MultiTenantManagement.Infrastructure.Features.Authentication;
 using MultiTenantManagement.Infrastructure.Features.Authentication.Dtos;
+using System.Security.Claims;
 
 namespace MultiTenantManagement.API.Controllers
 {
@@ -24,5 +26,6 @@ namespace MultiTenantManagement.API.Controllers
             var result = await _authenticationService.LoginAsync(dto);
             return Ok(result);
         }
+
     }
 }

@@ -10,6 +10,13 @@ using MultiTenantManagement.Infrastructure.Features.Users;
 using MultiTenantManagement.Infrastructure.Features.Authentication;
 using MultiTenantManagement.Infrastructure.Helpers;
 using Microsoft.OpenApi.Models;
+using MultiTenantManagement.Core.Interfaces;
+using MultiTenantManagement.Infrastructure.Features.Product;
+using MultiTenantManagement.Infrastructure.Mapper;
+using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using MultiTenantManagement.Infrastructure.Auth;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,6 +39,20 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 .AddEntityFrameworkStores<AppDbContext>()
 .AddDefaultTokenProviders();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy
+            .SetIsOriginAllowed(_ => true) 
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+    });
+});
+
+
+
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -50,14 +71,32 @@ builder.Services
         };
     });
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("TenantAccess", policy =>
+        policy.Requirements.Add(new TenantAccessRequirement()));
+    options.AddPolicy("SuperAdminOnly", policy =>
+        policy.RequireRole("SystemAdmin"));
+});
 
 
+
+// Services
+builder.Services.AddScoped<ICurrentUserContext, CurrentUserContext>();
 builder.Services.AddScoped<IUserManagementService, UserManagementService>();
 builder.Services.AddScoped<ITenantService, TenantService>();
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+builder.Services.AddScoped<IProductService, ProductService>();
 
+
+builder.Services.AddSingleton<IAuthorizationHandler, TenantAccessHandler>();
+
+
+// AutoMapper
+builder.Services.AddAutoMapper(
+    cfg => { },      
+    typeof(MappingProfile));
 
 builder.Services.AddSwaggerGen(c =>
 {
@@ -106,6 +145,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseRouting();
+app.UseCors("AllowFrontend");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

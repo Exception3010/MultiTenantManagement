@@ -32,6 +32,7 @@ namespace MultiTenantManagement.Infrastructure.Features.Authentication
             if (user == null || user.IsDeleted)
                 throw new UnauthorizedAccessException("Invalid email or password.");
 
+
             var result = await _signInManager.CheckPasswordSignInAsync(
                 user,
                 dto.Password,
@@ -41,12 +42,19 @@ namespace MultiTenantManagement.Infrastructure.Features.Authentication
             if (!result.Succeeded)
                 throw new UnauthorizedAccessException("Invalid email or password.");
 
-            var (token, expiresAt) = await _jwtTokenService.CreateTokenAsync(user);
+            var roles = await _userManager.GetRolesAsync(user);
 
+            var role = roles.FirstOrDefault();
+
+            var (token, expiresAt) = await _jwtTokenService.CreateTokenAsync(user);
             return new LoginResultDto
             {
                 AccessToken = token,
-                ExpiresAtUtc = expiresAt
+                ExpiresAtUtc = expiresAt,
+                Email = user.Email,
+                FullName = user.FullName,
+                TenantId = user.TenantId,
+                UserRole = role
             };
         }
     }

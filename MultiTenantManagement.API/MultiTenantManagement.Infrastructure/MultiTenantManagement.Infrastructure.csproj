@@ -7,12 +7,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="AutoMapper\" />
-    <Folder Include="Middlewares\" />
+    <PackageReference Include="AutoMapper" Version="16.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\MultiTenantManagement.Data\MultiTenantManagement.Data.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Middlewares\" />
   </ItemGroup>
 
 </Project>

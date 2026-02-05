@@ -8,7 +8,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace MultiTenantManagement.API.Controllers
 {
-    [Route("Users")]
+    [ApiController]
+    [Route("api/[controller]")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class UsersController : ControllerBase
     {

@@ -23,10 +23,10 @@ namespace MultiTenantManagement.Infrastructure.Features.Users
 
         public async Task<List<UserDto>> GetUsersAsync(Guid? tenantIdFilter, CancellationToken ct)
         {
-            var q = _userManager.Users.AsNoTracking();
+            var q = _userManager.Users.AsNoTracking().Where(u => !u.IsDeleted); ;
 
             if (tenantIdFilter.HasValue)
-                q = q.Where(u => u.TenantId == tenantIdFilter.Value);
+                q = q.Where(u => u.TenantId == tenantIdFilter.Value );
 
          
             var users = await q.OrderBy(u => u.Email).ToListAsync(ct);
@@ -51,7 +51,7 @@ namespace MultiTenantManagement.Infrastructure.Features.Users
 
         public async Task<UserDto?> GetByIdAsync(string userId, CancellationToken ct)
         {
-            var u = await _userManager.Users.AsNoTracking().FirstOrDefaultAsync(x => x.Id == userId, ct);
+            var u = await _userManager.Users.AsNoTracking().FirstOrDefaultAsync(x => x.Id == userId && !x.IsDeleted, ct);
             if (u is null) return null;
 
             var roles = await _userManager.GetRolesAsync(u);

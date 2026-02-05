@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MultiTenantManagement.Data.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -19,7 +20,9 @@ namespace MultiTenantManagement.Infrastructure.Features.Tenant.Dtos
 
         public string SubDomain { get; set; }
 
-        public DateTime CreatedAtUtc { get; set; } 
+        public DateTime CreatedAtUtc { get; set; }
+
+        public StoreSettingDto StoreSetting { get; set; }
 
     }
 }
