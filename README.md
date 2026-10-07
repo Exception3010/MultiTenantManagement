@@ -123,10 +123,70 @@ Eng. Belal Elfarra
 
 ---
 
+## 🔧 Configuration
+
+`appsettings.json` deliberately ships with **empty values** for every secret. Supply them from outside
+the repository before the first run, and never commit real values. With the blanks left in place the
+API cannot connect to PostgreSQL, cannot sign tokens, and the seeder stops with
+`SystemAdmin seed credentials are missing.`
+
+| Key | Purpose |
+| --- | --- |
+| `ConnectionStrings:Default` | Full PostgreSQL connection string, including the password |
+| `Jwt:Key` | Secret used to sign JWTs. Use a random string of at least 32 characters |
+| `Seed:SystemAdmin:Email` | Email of the SystemAdmin account created on first run |
+| `Seed:SystemAdmin:Password` | Password of that account (must satisfy the Identity password rules) |
+
+`Jwt:Issuer`, `Jwt:Audience` and `Jwt:ExpiresMinutes` keep the defaults in `appsettings.json`.
+
+### Local development: .NET user secrets
+
+User secrets live outside the repository (`%APPDATA%\Microsoft\UserSecrets\<id>\secrets.json` on
+Windows) and are loaded automatically while `ASPNETCORE_ENVIRONMENT` is `Development`, which is what
+`launchSettings.json` sets for Visual Studio and `dotnet run`.
+
+```powershell
+cd MultiTenantManagement.API\MultiTenantManagement.API
+dotnet user-secrets set "ConnectionStrings:Default" "Host=localhost;Port=5432;Database=MultiTenantDb;Username=postgres;Password=<db-password>"
+dotnet user-secrets set "Jwt:Key" "<random-string-of-at-least-32-characters>"
+dotnet user-secrets set "Seed:SystemAdmin:Email" "admin@example.com"
+dotnet user-secrets set "Seed:SystemAdmin:Password" "<strong-password>"
+dotnet user-secrets list
+```
+
+Generate a JWT key with one of:
+
+```powershell
+$b = New-Object byte[] 48; [System.Security.Cryptography.RandomNumberGenerator]::Create().GetBytes($b); [Convert]::ToBase64String($b)
+```
+
+```bash
+openssl rand -base64 48
+```
+
+### Production, CI and containers: environment variables
+
+Every key can also be provided as an environment variable; replace `:` with `__`:
+
+```text
+ConnectionStrings__Default=Host=<host>;Port=5432;Database=MultiTenantDb;Username=<user>;Password=<db-password>
+Jwt__Key=<random-string-of-at-least-32-characters>
+Seed__SystemAdmin__Email=admin@example.com
+Seed__SystemAdmin__Password=<strong-password>
+```
+
+Environment variables override both `appsettings.json` and user secrets.
+
+`dotnet ef database update` runs the startup project's configuration, so configure the connection
+string the same way first. If the command cannot find it, set `ASPNETCORE_ENVIRONMENT=Development`
+in the same shell so user secrets are loaded.
+
+---
+
 ## ▶️ How to Run the Project (Basic)
 
 1. Clone the repository
-2. Configure database connection in `appsettings.json`
+2. Supply the secrets described in [Configuration](#-configuration) (user secrets or environment variables)
 3. Apply migrations
 4. Run the ASP.NET Core Web API
 5. Start the React frontend

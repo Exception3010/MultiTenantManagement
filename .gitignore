@@ -1,8 +1,15 @@
+# Build output
 bin/
 obj/
-/packages/
+
+# IDE state
+.vs/
+.idea
+*.user
+*.suo
 riderModule.iml
 /_ReSharper.Caches/
-.idea
 MultiTenantManagement.sln.DotSettings.user
-/.vs/MultiTenantManagement/CopilotIndices/17.13.441.19478
+
+# NuGet
+/packages/
